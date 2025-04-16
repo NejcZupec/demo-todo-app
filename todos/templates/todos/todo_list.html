@@ -16,9 +16,26 @@
             {% for todo in todos %}
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">{{ todo.title }}</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title">{{ todo.title }}</h5>
+                            <span class="badge {% if todo.status == 'completed' %}bg-success{% elif todo.status == 'in_progress' %}bg-warning{% else %}bg-info{% endif %}">
+                                {{ todo.get_status_display }}
+                            </span>
+                        </div>
                         <p class="card-text">{{ todo.description }}</p>
-                        <p class="card-text"><small class="text-muted">Created: {{ todo.created_at|date:"F j, Y, g:i a" }}</small></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Created: {{ todo.created_at|date:"F j, Y, g:i a" }}</small>
+                            <div class="btn-group">
+                                <form method="post" action="{% url 'todo-update-status' todo.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                        <option value="open" {% if todo.status == 'open' %}selected{% endif %}>Open</option>
+                                        <option value="in_progress" {% if todo.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                        <option value="completed" {% if todo.status == 'completed' %}selected{% endif %}>Completed</option>
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
