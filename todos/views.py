@@ -26,7 +26,7 @@ class TodoListView(ListView):
 class TodoCreateView(CreateView):
     model = Todo
     template_name = 'todos/todo_form.html'
-    fields = ['title', 'description']
+    fields = ['title', 'description', 'card_color']
     success_url = reverse_lazy('todo-list')
 
 @csrf_exempt
@@ -37,6 +37,18 @@ def update_todo_status(request, pk):
         new_status = request.POST.get('status')
         if new_status in dict(Todo.STATUS_CHOICES):
             todo.status = new_status
+            todo.save()
+            return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)
+
+@csrf_exempt
+@require_POST
+def update_todo_color(request, pk):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        todo = get_object_or_404(Todo, pk=pk)
+        new_color = request.POST.get('color')
+        if new_color and new_color.startswith('#'):
+            todo.card_color = new_color
             todo.save()
             return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)

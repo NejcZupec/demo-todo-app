@@ -19,9 +19,13 @@
                 </div>
                 <div class="card-body" ondrop="drop(event)" ondragover="allowDrop(event)">
                     {% for todo in todos_by_status.backlog %}
-                        <div class="card mb-2 todo-card" draggable="true" ondragstart="drag(event)" id="todo-{{ todo.id }}">
+                        <div class="card mb-2 todo-card" draggable="true" ondragstart="drag(event)" id="todo-{{ todo.id }}" style="background-color: {{ todo.card_color }}">
                             <div class="card-body">
-                                <h6 class="card-title">{{ todo.title }}</h6>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="card-title mb-0">{{ todo.title }}</h6>
+                                    <input type="color" class="form-control form-control-color" value="{{ todo.card_color }}" 
+                                           onchange="updateCardColor({{ todo.id }}, this.value)" title="Choose card color">
+                                </div>
                                 <p class="card-text small">{{ todo.description|truncatechars:100 }}</p>
                             </div>
                         </div>
@@ -39,9 +43,13 @@
                 </div>
                 <div class="card-body" ondrop="drop(event)" ondragover="allowDrop(event)">
                     {% for todo in todos_by_status.doing %}
-                        <div class="card mb-2 todo-card" draggable="true" ondragstart="drag(event)" id="todo-{{ todo.id }}">
+                        <div class="card mb-2 todo-card" draggable="true" ondragstart="drag(event)" id="todo-{{ todo.id }}" style="background-color: {{ todo.card_color }}">
                             <div class="card-body">
-                                <h6 class="card-title">{{ todo.title }}</h6>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="card-title mb-0">{{ todo.title }}</h6>
+                                    <input type="color" class="form-control form-control-color" value="{{ todo.card_color }}" 
+                                           onchange="updateCardColor({{ todo.id }}, this.value)" title="Choose card color">
+                                </div>
                                 <p class="card-text small">{{ todo.description|truncatechars:100 }}</p>
                             </div>
                         </div>
@@ -59,9 +67,13 @@
                 </div>
                 <div class="card-body" ondrop="drop(event)" ondragover="allowDrop(event)">
                     {% for todo in todos_by_status.review %}
-                        <div class="card mb-2 todo-card" draggable="true" ondragstart="drag(event)" id="todo-{{ todo.id }}">
+                        <div class="card mb-2 todo-card" draggable="true" ondragstart="drag(event)" id="todo-{{ todo.id }}" style="background-color: {{ todo.card_color }}">
                             <div class="card-body">
-                                <h6 class="card-title">{{ todo.title }}</h6>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="card-title mb-0">{{ todo.title }}</h6>
+                                    <input type="color" class="form-control form-control-color" value="{{ todo.card_color }}" 
+                                           onchange="updateCardColor({{ todo.id }}, this.value)" title="Choose card color">
+                                </div>
                                 <p class="card-text small">{{ todo.description|truncatechars:100 }}</p>
                             </div>
                         </div>
@@ -79,9 +91,13 @@
                 </div>
                 <div class="card-body" ondrop="drop(event)" ondragover="allowDrop(event)">
                     {% for todo in todos_by_status.done %}
-                        <div class="card mb-2 todo-card" draggable="true" ondragstart="drag(event)" id="todo-{{ todo.id }}">
+                        <div class="card mb-2 todo-card" draggable="true" ondragstart="drag(event)" id="todo-{{ todo.id }}" style="background-color: {{ todo.card_color }}">
                             <div class="card-body">
-                                <h6 class="card-title">{{ todo.title }}</h6>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="card-title mb-0">{{ todo.title }}</h6>
+                                    <input type="color" class="form-control form-control-color" value="{{ todo.card_color }}" 
+                                           onchange="updateCardColor({{ todo.id }}, this.value)" title="Choose card color">
+                                </div>
                                 <p class="card-text small">{{ todo.description|truncatechars:100 }}</p>
                             </div>
                         </div>
@@ -111,6 +127,12 @@
 
 .todo-card:hover {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.form-control-color {
+    width: 2rem;
+    padding: 0.2rem;
+    height: 2rem;
 }
 </style>
 
@@ -153,5 +175,28 @@ function drop(ev) {
         alert('Failed to update todo status');
     });
 }
+
+function updateCardColor(todoId, color) {
+    fetch(`/todos/${todoId}/update-color/`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: new URLSearchParams({
+            'color': color
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const todoCard = document.getElementById(`todo-${todoId}`);
+            todoCard.style.backgroundColor = color;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update card color');
+    });
+}
 </script>
-{% endblock %} 
+{% endblock %}

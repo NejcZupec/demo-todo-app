@@ -18,6 +18,7 @@ class Todo(models.Model):
         choices=STATUS_CHOICES,
         default='backlog'
     )
+    card_color = models.CharField(max_length=7, default='#ffffff')  # Store color as hex code
 
     def __str__(self):
         return self.title
