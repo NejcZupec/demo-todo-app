@@ -29,6 +29,10 @@ class TodoCreateView(CreateView):
     fields = ['title', 'description', 'card_color']
     success_url = reverse_lazy('todo-list')
 
+    def form_valid(self, form):
+        form.instance.status = 'backlog'  # Set default status
+        return super().form_valid(form)
+
 @csrf_exempt
 @require_POST
 def update_todo_status(request, pk):
